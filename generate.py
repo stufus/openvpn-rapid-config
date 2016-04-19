@@ -277,6 +277,7 @@ if __name__ == "__main__":
         sys.stdout.write(colourise("key client_cert.key\n",'0;32'))
         sys.stdout.write("\n")
 
+        # Build the server config file
         server_config = open('example.server.conf', 'w')
         server_config.write("port 1194\n")
         server_config.write("proto udp\n")
@@ -290,8 +291,8 @@ if __name__ == "__main__":
         server_config.write("topology net30\n")
         server_config.write("ifconfig-pool-persist ipp.txt\n")
         server_config.write("push \"redirect-gateway def1 bypass-dhcp\"\n")
-        server_config.write("dhcp-option DNS 8.8.8.8\n")
-        server_config.write("dhcp-option DNS 8.8.4.4\n")
+        server_config.write("push \"dhcp-option DNS 8.8.8.8\"\n")
+        server_config.write("push \"dhcp-option DNS 8.8.4.4\"\n")
         server_config.write("keepalive 10 120\n")
         server_config.write("#run  openvpn --genkey --secret ta.key\n")
         server_config.write("tls-auth ta.key 0\n")
@@ -304,6 +305,7 @@ if __name__ == "__main__":
         server_config.write("status openvpn-status.log\n")
         server_config.close()
 
+        # Build the client config file
         client_config = open('example.client.conf', 'w')
         client_config.write("client\n")
         client_config.write("dev tun\n")
@@ -332,7 +334,13 @@ if __name__ == "__main__":
         client_config.write("#socks-proxy SERVER PORT\n")
         client_config.close()
 
+        # Inform the user
         sys.stdout.write(colourise(" Example configs written to example.server.conf and example.client.conf\n", '0;32'))
+   
+        # Tar up the required files for the server and client
+        build_tar('example.server.tar.gz', ['client_ca.pem','ta.key','dh2048.pem','server_cert.pem','server_key.pem'])
+        build_tar('example.client.tar.gz', ['server_ca.pem','ta.key','client_cert.pem','client_key.pem'])
+
         sys.exit(0)
 
     except Exception as e:
