@@ -264,8 +264,10 @@ def build_openssl_extra():
         sys.stdout.write(colourise("Reusing dh2048.pem\n",'0;36'))
     else:
         sys.stdout.write(colourise("Generating DH params...\n",'0;32'))
-        sys.stdout.write("\033[0;37m")
+        sys.stdout.write("\033[0;90m")
+        sys.stdout.flush()
         run_cmd(['openssl','dhparam','-out','dh2048.pem','2048'])
+        sys.stdout.write("\033[0;37m")
     sys.stdout.write("\n")
 
     sys.stdout.flush()
