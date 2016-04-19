@@ -250,7 +250,7 @@ def build_cert(config_cert,ca_cert,ca_key,name):
         sys.stdout.write(colourise(" Written PEM certificate to "+config_cert['cert_filename']+"\n", '0;32'))
         sys.stdout.write(colourise(" Written private key to "+config_cert['cert_key']+"\n", '0;32'))
         sys.stdout.write(colourise(" SHA1 "+name+" Cert Fingerprint: "+cert_cert.digest('sha1')+"\n", '0;32'))
-        os.chmod(config_ca['cert_key'], 0600)
+        os.chmod(config_cert['cert_key'], 0600)
     return cert_cert, cert_key
 
 def run_cmd(cmd):
