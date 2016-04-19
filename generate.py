@@ -15,7 +15,7 @@ import subprocess
 from OpenSSL import crypto
 
 # Change this if you want to use DH parameters of a different size
-DH_SIZE = 2048
+DH_PARAM_SIZE = 4096
 
 def certerator_config():
     server_ca = {}
@@ -263,13 +263,13 @@ def build_openssl_extra():
         run_cmd(['openvpn','--genkey','--secret','ta.key'])
     sys.stdout.write("\n")
 
-    if os.path.isfile('dh'+str(DH_SIZE)+'2048.pem'):
-        sys.stdout.write(colourise("Reusing dh"+str(DH_SIZE)+".pem\n",'0;36'))
+    if os.path.isfile('dh'+str(DH_PARAM_SIZE)+'.pem'):
+        sys.stdout.write(colourise("Reusing dh"+str(DH_PARAM_SIZE)+".pem\n",'0;36'))
     else:
         sys.stdout.write(colourise("Generating DH params...\n",'0;32'))
         sys.stdout.write("\033[0;90m")
         sys.stdout.flush()
-        run_cmd(['openssl','dhparam','-out','dh'+str(DH_SIZE)+'.pem',str(DH_SIZE)])
+        run_cmd(['openssl','dhparam','-out','dh'+str(DH_PARAM_SIZE)+'.pem',str(DH_PARAM_SIZE)])
         sys.stdout.write("\033[0;37m")
     sys.stdout.write("\n")
 
@@ -282,9 +282,9 @@ if __name__ == "__main__":
         config_server_ca, config_server_cert, config_client_ca, config_client_cert = certerator_config()
     
         # Build the Server and Client CA (if they do not already exist)
-        server_ca_cert, server_ca_key = build_ca(config_server_ca,'Server CA')
+        server_ca_cert, server_ca_key = build_ca(config_server_ca,'Server')
         sys.stdout.write("\n")
-        client_ca_cert, client_ca_key = build_ca(config_client_ca,'Client CA')
+        client_ca_cert, client_ca_key = build_ca(config_client_ca,'Client')
         sys.stdout.write("\n")
             
         # Build the server and client certificate (signed by the above CAs)
@@ -293,7 +293,7 @@ if __name__ == "__main__":
         build_cert(config_client_cert, client_ca_cert, client_ca_key, 'client')
         sys.stdout.write("\n")
 
-        # Now build ta.key and dh2048.pem if they do not already exist
+        # Now build ta.key and dh params if they do not already exist
         build_openssl_extra()
         sys.stdout.write("\n")
 
@@ -317,7 +317,7 @@ if __name__ == "__main__":
         server_config.write("ca client_ca.pem\n")
         server_config.write("cert server_cert.pem\n")
         server_config.write("key server_cert.key\n")
-        server_config.write("dh dh2048.pem\n")
+        server_config.write("dh dh"+str(DH_PARAM_SIZE)+".pem\n")
         server_config.write("server 10.255.255.0 255.255.255.0\n")
         server_config.write("topology net30\n")
         server_config.write("ifconfig-pool-persist ipp.txt\n")
@@ -368,9 +368,14 @@ if __name__ == "__main__":
         sys.stdout.write(colourise(" Example configs written to example.server.conf and example.client.conf\n", '0;32'))
    
         # Tar up the required files for the server and client
-        build_tar('example.server.tar.gz', ['client_ca.pem','ta.key','dh2048.pem','server_cert.pem','server_cert.key'])
+        build_tar('example.server.tar.gz', ['client_ca.pem','ta.key','dh'+str(DH_PARAM_SIZE)+'.pem','server_cert.pem','server_cert.key'])
         build_tar('example.client.tar.gz', ['server_ca.pem','ta.key','client_cert.pem','client_cert.key'])
 
+        # Inform the user
+        sys.stdout.write(colourise("\n Server configuration and related files are in example.server.tar.gz\n", '0;32'))
+        sys.stdout.write(colourise("\n Client configuration and related files are in example.client.tar.gz\n", '0;32'))
+        sys.stdout.write("\033[0;37m")
+        sys.stdout.flush()
         sys.exit(0)
 
     except Exception as e:
