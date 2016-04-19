@@ -10,6 +10,7 @@
 
 import os
 import sys
+import tarfile
 from OpenSSL import crypto
 
 def certerator_config():
@@ -20,6 +21,12 @@ def certerator_config():
 
     # Server Certification Authority
     server_ca['commonName'] = "Server CA"
+    #server_ca['stateOrProvinceName'] = "Hampshire"
+    #server_ca['localityName'] = "Basingstoke"
+    #server_ca['organizationName'] = "MWR InfoSecurity"
+    #server_ca['organizationalUnitName'] = "Certification Authority"
+    #server_ca['emailAddress'] = "labs@mwrinfosecurity.com"
+    #server_ca['countryName'] = "GB"
     server_ca['cert_filename'] = "server_ca.pem"
     server_ca['cert_key'] = "server_ca.key"
     server_ca['serial'] = 12345999
@@ -30,6 +37,12 @@ def certerator_config():
 
     # Server Certificate (signed by the CA above)
     server_cert['commonName'] = "Server Cert"
+    #server_cert['stateOrProvinceName'] = "Hampshire"
+    #server_cert['localityName'] = "Basingstoke"
+    #server_cert['organizationName'] = "MWR InfoSecurity"
+    #server_cert['organizationalUnitName'] = "Certification Authority"
+    #server_cert['emailAddress'] = "labs@mwrinfosecurity.com"
+    #server_cert['countryName'] = "GB"
     server_cert['cert_filename'] = "server_cert.pem"
     server_cert['cert_key'] = "server_cert.key"
     server_cert['serial'] = 12345888
@@ -40,6 +53,12 @@ def certerator_config():
 
     # Client Certification Authority
     client_ca['commonName'] = "Client CA"
+    #client_ca['stateOrProvinceName'] = "Hampshire"
+    #client_ca['localityName'] = "Basingstoke"
+    #client_ca['organizationName'] = "MWR InfoSecurity"
+    #client_ca['organizationalUnitName'] = "Certification Authority"
+    #client_ca['emailAddress'] = "labs@mwrinfosecurity.com"
+    #client_ca['countryName'] = "GB"
     client_ca['cert_filename'] = "client_ca.pem"
     client_ca['cert_key'] = "client_ca.key"
     client_ca['serial'] = 12345777
@@ -50,6 +69,12 @@ def certerator_config():
 
     # Client Certificate (signed by the CA above)
     client_cert['commonName'] = "Client Cert"
+    #client_cert['stateOrProvinceName'] = "Hampshire"
+    #client_cert['localityName'] = "Basingstoke"
+    #client_cert['organizationName'] = "MWR InfoSecurity"
+    #client_cert['organizationalUnitName'] = "Certification Authority"
+    #client_cert['emailAddress'] = "labs@mwrinfosecurity.com"
+    #client_cert['countryName'] = "GB"
     client_cert['cert_filename'] = "client_cert.pem"
     client_cert['cert_key'] = "client_cert.key"
     client_cert['serial'] = 12345666
@@ -179,6 +204,12 @@ def generate_certificate(config_cert, ca, cakey, name):
 
     cert.sign(cakey, config_cert['hashalgorithm'])
     return req, cert, key
+
+def build_tar(filename,includedfiles):
+    tar = tarfile.open(filename, "w:gz")
+    for name in includedfiles:
+        tar.add(name)
+    tar.close()
 
 def build_ca(server_ca,name):
     if os.path.isfile(server_ca['cert_filename']) and os.path.isfile(server_ca['cert_key']):
