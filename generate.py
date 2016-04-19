@@ -365,15 +365,15 @@ if __name__ == "__main__":
         client_config.close()
 
         # Inform the user
-        sys.stdout.write(colourise(" Example configs written to example.server.conf and example.client.conf\n", '0;32'))
+        sys.stdout.write(colourise("Example configs written to example.server.conf and example.client.conf\n", '0;32'))
    
         # Tar up the required files for the server and client
         build_tar('example.server.tar.gz', ['client_ca.pem','ta.key','dh'+str(DH_PARAM_SIZE)+'.pem','server_cert.pem','server_cert.key'])
         build_tar('example.client.tar.gz', ['server_ca.pem','ta.key','client_cert.pem','client_cert.key'])
 
         # Inform the user
-        sys.stdout.write(colourise("\n Server configuration and related files are in example.server.tar.gz\n", '0;32'))
-        sys.stdout.write(colourise("\n Client configuration and related files are in example.client.tar.gz\n", '0;32'))
+        sys.stdout.write(colourise("\nServer configuration and related files are in example.server.tar.gz\n", '0;32'))
+        sys.stdout.write(colourise("Client configuration and related files are in example.client.tar.gz\n", '0;32'))
         sys.stdout.write("\033[0;37m")
         sys.stdout.flush()
         sys.exit(0)
