@@ -249,23 +249,25 @@ def build_cert(config_cert,ca_cert,ca_key,name):
     return cert_cert, cert_key
 
 def run_cmd(cmd):
-    popen = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    popen = subprocess.Popen(cmd)
     popen.wait()
-    return popen.stdout.read()
 
 def build_openssl_extra():
-    sys.stdout.write(colourise("Generating new HMAC key...\n",'0;32'))
     if os.path.isfile('ta.key'):
         sys.stdout.write(colourise("Reusing ta.key\n",'0;36'))
     else:
-        print run_cmd('openvpn --genkey ta.key')
-    sys.stdout.flush()
+        sys.stdout.write(colourise("Generating new HMAC key...\n",'0;32'))
+        run_cmd(['openvpn','--genkey','--secret','ta.key'])
+    sys.stdout.write("\n")
 
-    sys.stdout.write(colourise("Generating DH params...\n",'0;32'))
     if os.path.isfile('dh2048.pem'):
         sys.stdout.write(colourise("Reusing dh2048.pem\n",'0;36'))
     else:
-        print run_cmd('openssl dhparam -out dh2048.pem 2048')
+        sys.stdout.write(colourise("Generating DH params...\n",'0;32'))
+        sys.stdout.write("\033[0;37m")
+        run_cmd(['openssl','dhparam','-out','dh2048.pem','2048'])
+    sys.stdout.write("\n")
+
     sys.stdout.flush()
 
 if __name__ == "__main__":
@@ -309,8 +311,7 @@ if __name__ == "__main__":
         server_config.write("dev tun\n")
         server_config.write("ca client_ca.pem\n")
         server_config.write("cert server_cert.pem\n")
-        server_config.write("key server_ccert.key\n")
-        server_config.write("#run openssl dhparam -out dh2048.pem 2048\n")
+        server_config.write("key server_cert.key\n")
         server_config.write("dh dh2048.pem\n")
         server_config.write("server 10.255.255.0 255.255.255.0\n")
         server_config.write("topology net30\n")
@@ -319,7 +320,6 @@ if __name__ == "__main__":
         server_config.write("push \"dhcp-option DNS 8.8.8.8\"\n")
         server_config.write("push \"dhcp-option DNS 8.8.4.4\"\n")
         server_config.write("keepalive 10 120\n")
-        server_config.write("#run  openvpn --genkey --secret ta.key\n")
         server_config.write("tls-auth ta.key 0\n")
         server_config.write("cipher AES-128-CBC\n")
         server_config.write("comp-lzo\n")
@@ -363,8 +363,8 @@ if __name__ == "__main__":
         sys.stdout.write(colourise(" Example configs written to example.server.conf and example.client.conf\n", '0;32'))
    
         # Tar up the required files for the server and client
-        build_tar('example.server.tar.gz', ['client_ca.pem','ta.key','dh2048.pem','server_cert.pem','server_key.pem'])
-        build_tar('example.client.tar.gz', ['server_ca.pem','ta.key','client_cert.pem','client_key.pem'])
+        build_tar('example.server.tar.gz', ['client_ca.pem','ta.key','dh2048.pem','server_cert.pem','server_cert.key'])
+        build_tar('example.client.tar.gz', ['server_ca.pem','ta.key','client_cert.pem','client_cert.key'])
 
         sys.exit(0)
 
