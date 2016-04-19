@@ -247,6 +247,17 @@ def build_cert(config_cert,ca_cert,ca_key,name):
         sys.stdout.write(colourise(" SHA1 "+name+" Cert Fingerprint: "+cert_cert.digest('sha1')+"\n", '0;32'))
     return cert_cert, cert_key
 
+def build_openssl_extra():
+    if os.path.isfile('ta.key'):
+        sys.stdout.write(colourise("Reusing ta.key\n",'0;36'))
+    else:
+        pass
+
+    if os.path.isfile('dh2048.pem'):
+        sys.stdout.write(colourise("Reusing dh2048.pem\n",'0;36'))
+    else:
+        pass
+
 if __name__ == "__main__":
     banner()
     try:
@@ -263,6 +274,10 @@ if __name__ == "__main__":
         build_cert(config_server_cert, server_ca_cert, server_ca_key, 'server')
         sys.stdout.write("\n")
         build_cert(config_client_cert, client_ca_cert, client_ca_key, 'client')
+        sys.stdout.write("\n")
+
+        # Now build ta.key and dh2048.pem if they do not already exist
+        build_openssl_extra
         sys.stdout.write("\n")
 
         # Now give instructions
