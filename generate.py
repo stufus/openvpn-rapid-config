@@ -14,6 +14,9 @@ import tarfile
 import subprocess
 from OpenSSL import crypto
 
+# Change this if you want to use DH parameters of a different size
+DH_SIZE = 2048
+
 def certerator_config():
     server_ca = {}
     server_cert = {}
@@ -260,13 +263,13 @@ def build_openssl_extra():
         run_cmd(['openvpn','--genkey','--secret','ta.key'])
     sys.stdout.write("\n")
 
-    if os.path.isfile('dh2048.pem'):
-        sys.stdout.write(colourise("Reusing dh2048.pem\n",'0;36'))
+    if os.path.isfile('dh'+str(DH_SIZE)+'2048.pem'):
+        sys.stdout.write(colourise("Reusing dh"+str(DH_SIZE)+".pem\n",'0;36'))
     else:
         sys.stdout.write(colourise("Generating DH params...\n",'0;32'))
         sys.stdout.write("\033[0;90m")
         sys.stdout.flush()
-        run_cmd(['openssl','dhparam','-out','dh2048.pem','2048'])
+        run_cmd(['openssl','dhparam','-out','dh'+str(DH_SIZE)+'.pem',str(DH_SIZE)])
         sys.stdout.write("\033[0;37m")
     sys.stdout.write("\n")
 
