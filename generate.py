@@ -11,6 +11,7 @@
 import os
 import sys
 import tarfile
+import subprocess
 from OpenSSL import crypto
 
 def certerator_config():
@@ -247,16 +248,25 @@ def build_cert(config_cert,ca_cert,ca_key,name):
         sys.stdout.write(colourise(" SHA1 "+name+" Cert Fingerprint: "+cert_cert.digest('sha1')+"\n", '0;32'))
     return cert_cert, cert_key
 
+def run_cmd(cmd):
+    popen = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    popen.wait()
+    return popen.stdout.read()
+
 def build_openssl_extra():
+    sys.stdout.write(colourise("Generating new HMAC key...\n",'0;32'))
     if os.path.isfile('ta.key'):
         sys.stdout.write(colourise("Reusing ta.key\n",'0;36'))
     else:
-        pass
+        print run_cmd('openvpn --genkey ta.key')
+    sys.stdout.flush()
 
+    sys.stdout.write(colourise("Generating DH params...\n",'0;32'))
     if os.path.isfile('dh2048.pem'):
         sys.stdout.write(colourise("Reusing dh2048.pem\n",'0;36'))
     else:
-        pass
+        print run_cmd('openssl dhparam -out dh2048.pem 2048')
+    sys.stdout.flush()
 
 if __name__ == "__main__":
     banner()
@@ -277,7 +287,7 @@ if __name__ == "__main__":
         sys.stdout.write("\n")
 
         # Now build ta.key and dh2048.pem if they do not already exist
-        build_openssl_extra
+        build_openssl_extra()
         sys.stdout.write("\n")
 
         # Now give instructions
