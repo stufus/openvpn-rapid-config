@@ -5,7 +5,9 @@
 #  Stuart Morgan <stuart.morgan@mwrinfosecurity.com> @ukstufus
 #
 #  This will generate a CA and certificate (signed by the CA) for mutual SSL/TLS
-#  authentication. It is intended to be used with OpenVPN.
+#  authentication. It is intended to be used with OpenVPN. It also generates
+#  configuration files, keys and other related files needed to execute OpenVPN
+#  with a minimum of hassle.
 #
 
 import os
